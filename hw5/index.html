@@ -1,0 +1,148 @@
+<html>
+
+<head>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+
+<body>
+    <h3>
+        Fatima Mahmoud (fam76)
+    </h3>
+    <p id="p1">
+        <style>
+            .gridlines line {
+                stroke: #bbb;
+            }
+
+            .gridlines .domain {
+                stroke: none;
+            }
+        </style>
+        <script>
+
+            d3.json("diamonds.json").then((data) => {
+
+                console.log(data)
+
+                const svg = d3.select("#p1")
+                    .append("svg")
+                    .attr("width", 500)
+                    .attr("height", 500);
+
+                const width = svg.attr("width");
+                const height = svg.attr("height");
+                const margins = { "top": 10, "right": 10, "bottom": 40, "left": 60 };
+                const chartWidth = width - margins.left - margins.right;
+                const chartHeight = height - margins.top - margins.bottom;
+                let chartArea = svg.append("g").attr("id", "points")
+                    .attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+
+                //y axis
+                const priceExtent = d3.extent(data, d => d['price']);
+                const priceScale = d3.scaleLinear().domain([0, priceExtent[1]]).range([chartHeight, 0]);
+
+                //x axis
+                const caratExtent = d3.extent(data, d => d['carat']);
+                const caratScale = d3.scaleLinear().domain([0, caratExtent[1]]).range([0, chartWidth]);
+
+
+                let leftAxis = d3.axisLeft(priceScale).tickFormat(d3.format("$,"));
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .attr("transform", "translate(" + (margins.left - 10) + "," + margins.top + ")")
+                    .call(leftAxis);
+
+                let bottomAxis = d3.axisBottom(caratScale).ticks(5);
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(" + margins.left + "," + (chartHeight + margins.top + 10) + ")")
+                    .call(bottomAxis);
+
+                let leftGridlines = d3.axisLeft(priceScale)
+                    .tickSize(-chartWidth - 10)
+                    .tickFormat("");
+                svg.append("g")
+                    .attr("class", "y gridlines")
+                    .attr("transform", "translate(" + (margins.left - 10) + "," + margins.top + ")")
+                    .call(leftGridlines);
+
+                let bottomGridlines = d3.axisBottom(caratScale)
+                    .tickSize(-chartHeight - 10)
+                    .tickFormat("")
+                svg.append("g")
+                    .attr("class", "x gridlines")
+                    .attr("transform", "translate(" + margins.left + "," + (chartHeight + margins.top + 10) + ")")
+                    .call(bottomGridlines);
+
+
+                let circles = chartArea.selectAll("circle").data(data)
+                    .join("circle")
+                    .attr("cx", d => caratScale(d['carat']))
+                    .attr("cy", d => priceScale(d['price']))
+                    .attr("r", 3)
+                    .style("fill", "darkblue")
+                    .attr("opacity", 0.3)
+            })
+
+        </script>
+
+
+    </p>
+    <p id="D">
+        The relationship between price and carats does not look linear because a lot of the points are clustered at the
+        very beginning (and bottom) of the graph, but relatively few points near the end of the graph/above. This makes
+        me think we should've used a log scale instead of a linear scale. I can see a relationship in that as the carat
+        increases, the price increases, but I think it'd be clearer with a nonlinear scale.
+
+    </p>
+
+    <p id="p2">
+        <svg id="colored_svg" height="420" width="420">
+
+        </svg>
+        <input type="range" id="slider" value="100" name="slider" min="0" max="200" step="1">
+        </input>
+        <script>
+
+            var obj_array = [];
+
+            for (let i = 0; i <= 360; i = i + 18) {
+                for (let j = 0; j <= 100; j = j + 5) {
+                    let obj = {
+                        h: i,
+                        c: j
+                    };
+                    obj_array.push(obj);
+                }
+            }
+
+            console.log(obj_array);
+
+
+            const svg = d3.select("#colored_svg");
+
+            const hScale = d3.scaleLinear().domain([0, 360]).range([0, 410]);
+            const cScale = d3.scaleLinear().domain([0, 100]).range([410, 0]);
+
+            function showCircles(lightness) {
+                svg.selectAll("circle").data(obj_array)
+                    .join("circle")
+                    .attr("r", 10)
+                    .attr("fill", d => d3.hcl(d['h'], c = d['c'], l = lightness))
+                    .attr("cx", d => hScale(d['h']) + 20)
+                    .attr("cy", d => cScale(d['c']) + 20)
+
+            }
+
+            showCircles(80)
+            d3.select("#slider").on("input", function () {
+                showCircles(this.value);
+            });
+
+        </script>
+
+
+    </p>
+</body>
+
+</html>

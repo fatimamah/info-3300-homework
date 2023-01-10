@@ -1,0 +1,91 @@
+<html>
+
+<head>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
+
+
+</head>
+
+<body>
+  <h3> Fatima Mahmoud (fam76)</h3>
+
+
+  <p id="p1">
+    <svg id="choropleth" height="620" width="800" style="margin:20px"> </svg>
+    <script>
+
+      const svg = d3.select("#choropleth");
+      const width = svg.attr("width");
+      const height = svg.attr("height");
+      const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+      const mapWidth = width - margin.left - margin.right;
+      const mapHeight = height - margin.top - margin.bottom;
+      const map = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+      const requestData = async function () {
+
+        const nyb = await d3.json("ny_state_biodiversity.json");
+        console.log(nyb);
+
+        var counties = topojson.feature(nyb, nyb.objects.counties);
+
+        var countiesMesh = topojson.mesh(nyb, nyb.objects.counties);
+
+        var stateMesh = topojson.mesh(nyb, nyb.objects.state);
+
+        var projection = d3.geoMercator().fitSize([mapWidth, mapHeight], counties);
+
+        var path = d3.geoPath().projection(projection);
+
+        var colorList = ["#d11d53", "#ffd0d7", "#cdcdcd", "#a8caff", "#30d5c8"];
+
+        const colorScale = d3.scaleQuantile()
+          .domain(nyb.Total_Biodiversity_allvalues)
+          .range(colorList);
+
+        map.selectAll(".counties").data(counties.features)
+          .join("path")
+          .attr("class", "counties")
+          .attr("d", path);
+
+        map.append("path").datum(stateMesh)
+          .attr("class", "outline")
+          .attr("stroke-width", "3px")
+          .attr("stroke", "darkgray")
+          .style("fill", "None")
+          .attr("d", path);
+
+        map.append("path").datum(countiesMesh)
+          .attr("class", "outline")
+          .attr("stroke-width", "1px")
+          .attr("stroke", "white")
+          .style("fill", "None")
+          .attr("d", path);
+
+        map.selectAll(".counties")
+          .style("fill", d => colorScale(d.properties.Total_Biodiversity));
+
+        let coordinates = projection([-76.4850, 42.4476]);
+
+        map.selectAll("circle").data(counties.features)
+          .join("circle")
+          .attr("r", 5)
+          .attr("fill", "black")
+          .attr("cx", coordinates[0])
+          .attr("cy", coordinates[1]);
+
+      }
+
+      requestData();
+
+    </script>
+  </p>
+
+
+
+</body>
+
+</html>

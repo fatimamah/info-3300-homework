@@ -1,0 +1,234 @@
+<html>
+
+<head>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .gridlines line {
+            stroke: #bbb;
+        }
+
+        .gridlines .domain {
+            stroke: none;
+        }
+
+        .legend span {
+            margin-right: 10px;
+            margin-left: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>
+        Fatima Mahmoud (fam76)
+    </h3>
+    <p id="p1">
+        <svg id="wines_svg" height="500" width="800">
+            <text id="label" x="790" y="2" text-anchor="end" alignment-baseline="hanging"></text>
+        </svg>
+    <div id="scatterLegend" class="legend"> </div>
+    <script>
+        d3.json("wines.json").then((data) => {
+
+            data.forEach((d, i) => {
+                d['price'] = Number(d['price'].replace(/,/g, "").replace(/\$/g, ""));
+                d['points'] = Number(d['points']);
+
+            });
+
+
+            data = data.filter((d) => { return (d['region_1']) && d['country'] != "N/A" && d['country'] != "NA" && 0 <= d['price'] && 0 <= d['points']; })
+            console.log(data.length)
+
+            const svg = d3.select("#wines_svg");
+            const width = svg.attr("width");
+            const height = svg.attr("height");
+            const margins = { "top": 10, "right": 10, "bottom": 50, "left": 50 };
+            const chartWidth = width - margins.left - margins.right;
+            const chartHeight = height - margins.top - margins.bottom;
+
+            let scatter = svg.append("g")
+                .attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+
+
+
+            const priceExtent = d3.extent(data, d => d['price']);
+            const priceScale = d3.scaleLog().domain(priceExtent).range([0, chartWidth]);
+
+            const pointsExtent = d3.extent(data, d => d['points']);
+            const pointsScale = d3.scaleLinear().domain(pointsExtent).range([chartHeight, 0]);
+
+
+            const statesScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+
+
+            data.forEach((d, i) => {
+                let circle = scatter.append("circle")
+                    .attr("cx", priceScale(d['price']) + jitter())
+                    .attr("cy", pointsScale(d['points']) + jitter())
+                    .attr("r", 4)
+                    .attr("fill", statesScale(d['state']))
+                    .attr("index", i)
+                    .attr("opacity", 0.7)
+                    .attr("label", d["title"])
+                    .attr("state", d["state"]);
+
+
+                circle.on("mouseover", function () {
+
+                    d3.select(this).raise()
+                        .transition().duration(200)
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 4)
+                        .attr("r", 6);
+
+                    d3.select("#label").text(d['title']);
+
+                })
+
+                circle.on("mouseout", function () {
+
+                    d3.select(this)
+                        .transition().duration(200)
+                        .attr("stroke-width", 0)
+                        .attr("r", 4);
+
+                    d3.select("#label").text(d[""]);
+
+                })
+
+            })
+
+
+            let leftAxis = d3.axisLeft(pointsScale);
+            svg.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + (margins.left - 10) + "," + margins.top + ")")
+                .call(leftAxis);
+
+            let bottomAxis = d3.axisBottom(priceScale).tickFormat(d3.format("$.0s"));
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(" + margins.left + "," + (chartHeight + margins.top + 10) + ")")
+                .call(bottomAxis);
+
+
+            let leftGridlines = d3.axisLeft(pointsScale)
+                .tickSize(-chartWidth - 10)
+                .tickFormat("");
+            svg.append("g").lower()
+                .attr("class", "y gridlines")
+                .attr("transform", "translate(" + (margins.left - 10) + "," + margins.top + ")")
+                .call(leftGridlines);
+
+            let bottomGridlines = d3.axisBottom(priceScale)
+                .tickSize(-chartHeight - 10)
+                .tickFormat("")
+            svg.append("g").lower()
+                .attr("class", "x gridlines")
+                .attr("transform", "translate(" + margins.left + "," + (chartHeight + margins.top + 10) + ")")
+                .call(bottomGridlines);
+
+
+            statesScale.domain().forEach(function (d, i) {
+
+                d3.select("#scatterLegend")
+                    .append("span")
+                    .text(d)
+                    .style("color", statesScale(d))
+                    .on("mouseover", function () {
+
+                        d3.selectAll("#wines_svg circle").each(function () {
+                            let element = d3.select(this);
+                            if (element.attr("state") === d) {
+
+                                element.attr("opacity", "1");
+                            }
+                            else {
+
+                                element.attr("opacity", "0.2");
+                            }
+
+
+                        })
+
+
+
+                    })
+            })
+
+
+            d3.select("#scatterLegend")
+                .append("span")
+                .text("Clear")
+                .style("color", "black")
+                .on("mouseover", function () {
+
+                    d3.selectAll("#wines_svg circle").each(function () {
+                        let element = d3.select(this);
+                        element.attr("opacity", "0.7");
+
+                    })
+
+                })
+        })
+
+
+        //helper function
+        function jitter() {
+
+            min = Math.ceil(-4);
+            max = Math.floor(4);
+            return Math.floor(Math.random() * (max - min + 1) + min);
+
+        }
+
+
+
+
+    </script>
+
+    </p>
+    <p id="A">
+        Part A: The issues I found were: (1) points being strings so I converted them to numbers (2) price being strings
+        so I converted them to numbers and took out commas and dollar signs (3) countries being "NA" or "N/A" so I
+        filtered them out (4) points being negative so I filtered them out (5) regions being null/empty strings so I
+        filtered out falsy values for region_1 and finally (6) I didn't see any negative prices, but just to make sure
+        there weren't any, I filtered those out too. I removed 61 counts of bad data.
+    </p>
+
+    <p id="B">
+        Part B: For the Y axis (points), I chose a linear scale because the range for points was 80-98 (min to max)
+        which isn't really big. It doesn't jump from a small value to a really big value, so I think it would be linear.
+        For the X axis (price), I chose a logarithmic scale because the range is 10 to 225. That is a really big range
+        so I assumed it was logarithmic and when I graphed the circles in part c, that was confirmed because the graph
+        was a lot less cluttered when the x axis was logarithmic. I tried it as a linear scale, and a lot of the points
+        were clustered near the beg. of the x axis and then huge jumps to the end of the x-axis which indicates to me
+        that log scale was a good choice. I also changed the labels for the x axis to have a dollar sign, 0 decimals
+        (because they were all integers), and the SI prefixes because they're prices.
+        For the
+        colors (based on state), I chose an ordinal scale because it is quantitative. It is states ordered into colors.
+        I chose the d3.schemeCategory10 because I thought it would be good because it tries to find good colors that
+        work for different types of colorblindness. The gridlines are light gray so the colors of the circles are seen
+        and so it is easy to look at. I put .lower() for the gridlines so they would be below the circles and not above.
+    </p>
+    <p id="C">
+        Part C: I made the radius 4 because that looked like a good size--not too small and not too large. I didn't add
+        a stroke because I felt that would make the graph really cluttered and confusing. I made the opacity 0.7 because
+        even after the jittering, there was still overlap and the opacity helped a bit. Going lower than .7 opacity
+        however made the circles look really faded.
+        One advantage to using the jittering approach is that I can see where the density of the data is and understand
+        the relationship between the x and y better just from looking at the graph. One disadvantage to using the
+        jittering approach is that the circles are not completly correct because its been slightly changed by a random
+        number.
+    </p>
+    <p id="D">
+        Part D: The possible benefits to this approach is that a user will be able to see the titles of the wines
+        clearly just by picking a circle and that by making it so clear which circle they picked, they can distinguish
+        between circles that are overlapped..
+        The place in the chart where it can be confusing/ineffective is the highest circle in the graph (index 655)
+        because it is right at where the title is shown. The text and the circle overlap and it causes some flickering
+        when moving slightly away from the circle to read the title better. It also just blocks a part of the text when
+        looking at other circles' titles.
+    </p>
