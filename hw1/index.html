@@ -1,0 +1,166 @@
+<html>
+
+<body>
+    <p id="p1">
+        Problem 1:
+    <ol type="A">
+        <li>
+            <ul>
+                <li>marks: individual shapes (of counties and states).</li>
+                <li>channels: varying the color hue of the shapes (counties).</li>
+            </ul>
+        </li>
+        <li>
+            <ul>
+                <li>marks:blue rectangles with dark outlines</li>
+                <li>channels:varying the vertical aligned length and horizontal aligned position of rectangles.The color
+                    hue of the outlines show the horizontal aligned position clearly.
+                </li>
+            </ul>
+        </li>
+        <li>
+            <ul>
+                <li>marks: circles</li>
+                <li>channels: varying the color luminosity, color hue, horizontal aligned position, and vertical
+                    aligned position of the circles.</li>
+            </ul>
+        </li>
+    </ol>
+    </p>
+    <p id="p2">
+        Problem 2:
+    <ol type="a">
+        <li>number
+            <ol type="A">
+                <li>It is a canonical Javascript type.</li>
+                <li>
+                    <script>console.log(typeof (1));</script>
+                </li>
+                <li>Irrational numbers (such as pi accessed by the Math library) and floats (1.3) are also type number.
+                </li>
+            </ol>
+        </li>
+        <li>int
+            <ol type="A">
+                <li>It is not a canonical Javascript type. What is normally thought of as "int" (ex: 1) is type number.
+                </li>
+                <li>n/a</li>
+                <li>n/a</li>
+            </ol>
+        </li>
+        <li>unicode
+            <ol type="A">
+                <li>It is not a canonical Javascript type. Unicode is type
+                    string.</li>
+                <li>n/a</li>
+                <li>n/a</li>
+            </ol>
+        </li>
+        <li>array
+            <ol type="A">
+                <li>It is not a canonical Javascript type. What is normally thought of as an array (ex: []) is type
+                    object.</li>
+                <li>n/a</li>
+                <li>n/a</li>
+            </ol>
+        </li>
+        <li>char
+            <ol type="A">
+                <li>It is not a canonical Javascript type. What is normally thought of as type "char" (ex: "r") is type
+                    string.</li>
+                <li>n/a</li>
+                <li>n/a</li>
+            </ol>
+        </li>
+        <li>class
+            <ol type="A">
+                <li>It is not a canonical Javascript type. Classes are type
+                    object.</li>
+                <li>n/a</li>
+                <li>n/a</li>
+            </ol>
+        </li>
+        <li>regex
+            <ol type="A">
+                <li>It is not a canonical Javascript type. Regex (ex: /regex/) is type
+                    object.</li>
+                <li>n/a</li>
+                <li>n/a</li>
+            </ol>
+        </li>
+        <li>string
+            <ol type="A">
+                <li>It is a canonical Javascript type.</li>
+                <li>
+                    <script>console.log(typeof ("hello"));</script>
+                </li>
+                <li>One letter (which are type char in python) and unicode are also type string. Can use double or
+                    single quotes for type string.</li>
+            </ol>
+        </li>
+        <li>boolean
+            <ol type="A">
+                <li>It is a canonical Javascript type.</li>
+                <li>
+                    <script>console.log(typeof (true));</script>
+                </li>
+                <li>n/a</li>
+            </ol>
+        </li>
+        <li>object
+            <ol type="A">
+                <li>It is a canonical Javascript type.</li>
+                <li>
+                    <script>console.log(typeof (new Object()));</script>
+                </li>
+                <li>Objects are also dictionaries (dictionaries are not a type) in Javascript. When checking type of
+                    functions, the console will say
+                    "function" but functions are actually type object. Lists and array data structures are also type
+                    object.</li>
+            </ol>
+        </li>
+        <li>null
+            <ol type="A">
+                <li>It is a canonical Javascript type.</li>
+                <li>
+                    <script>console.log(typeof (null));</script>
+                </li>
+                <li>When checking type of null, the console will say
+                    "object" but null is it's own type not type object.</li>
+            </ol>
+        </li>
+        <li>function
+            <ol type="A">
+                <li>It is not a canonical Javascript type. While the typeof a function, such as console.log, will say it
+                    is a function in the console, it is actually type object.</li>
+                <li>n/a</li>
+                <li>n/a</li>
+            </ol>
+        </li>
+    </ol>
+    </p>
+    <p id="p3">
+        Problem 3: Type coercion is a process that Javascript does when it encounters a comparison between two
+        dissimilar things or when trying to use a particular thing as if it were a different type. Javascript then casts
+        things into other types (coerces things into strings, numbers, and booleans, but never into objects) to try to
+        make it work without throwing an error or exceptions like other languages such as Python would.
+    <ul> Two examples of type coercion are:
+        <li>When adding a number and a string. If I added the number 5 to the string "Fatima" in python, this should
+            throw an error because I can't add a string to a number or concatenate a number to a string because they
+            are two different types. In javascript, it makes the number 5 a string and prints the string "5Fatima".
+        </li>
+        <li>When adding a boolean and a number.If I added the boolean true to the number 4 in python, this should
+            throw an error because they are two different types. In javascript, it makes the boolean true equal to
+            the number 1 and adds that to 3 to print the number 4.
+        </li>
+    </ul>
+    <script> console.log(5 + "Fatima");
+        console.log(true + 4);</script>
+    </p>
+    <p id="p3">
+        Problem 4: Late and unreadable work will recieve a 0. Each student has 5 slip days for homework and will be
+        automatically used when the assignment is graded. We can use up to 3 slip days for one assignment.
+    </p>
+</body>
+
+</html>
