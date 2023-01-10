@@ -1,0 +1,143 @@
+<html>
+
+<head>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+
+<body>
+    <h3>
+        Fatima Mahmoud fam76
+    </h3>
+    <ul id="p1">
+        <li>It is a divergent scale. It's not effective because the middle is not neutral (white, tan, or gray). The
+            middle doesn't look like it fades away and it looks as important as the ends. </li>
+        <li>This is not an effective color scale because it is sequential but the data is basically -1,0,1 (dislike,
+            neurtal, like) which is more fit for a divergent scale because the neutral middle color is like a midpoint
+            and then there are sequential scales to either side.</li>
+        <li>Red-Weak/Protanomaly, Green-Weak/Deuteranamoly, Blue-Weak/Tritanamoly, Red-Blind/Protanopia,
+            Green-Blind/Deuteranopia, and Blue-Blind/Tritanopia</li>
+        <li>No because rainbow color scales are not good for any data that is ordered. It is hard to judge place in this
+            scale (unorderable) and the colors may have implicit categorizations that don't fit with the data. There are
+            also luminosity issues and some colors have more "room" for detail than others because we can percieve them
+            better.</li>
+    </ul>
+
+    <p id="p2">
+        <svg id="svg1" height=240 width=240 style="border: 1px solid lightgrey">
+
+        </svg>
+        <script>
+            let svg = d3.select("#svg1");
+
+            let xScale = d3.scaleLinear()
+                .domain([0, 10])
+                .range([20, 220]);
+            let yScale = d3.scaleLinear()
+                .domain([0, 10])
+                .range([220, 20]);
+
+            for (let i = 0; i < 11; i++) {
+                // y axis line
+                svg.append("line")
+                    .attr("x1", xScale(i))
+                    .attr("x2", xScale(i))
+                    .attr("y1", 20)
+                    .attr("y2", 220)
+                    .attr("stroke", "lightgrey")
+                    .attr("stroke-width", "1px")
+                // x axis line
+                svg.append("line")
+                    .attr("x1", 20)
+                    .attr("x2", 220)
+                    .attr("y1", yScale(i))
+                    .attr("y2", yScale(i))
+                    .attr("stroke", "lightgrey")
+                    .attr("stroke-width", "1px")
+            }
+
+            graphLabels = [0, 5, 10]
+            graphLabels.forEach((d, i) => {
+                // y axis labels
+                svg.append("text")
+                    .attr("text-anchor", "start")
+                    .attr("dominant-baseline", "middle")
+                    .attr("font", "15px")
+                    .attr("font-weight", "bold")
+                    .attr("font-family", "arial")
+                    .attr("x", 0)
+                    .attr('y', yScale(d))
+                    .text(d);
+                // x axis labels
+                svg.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("dominant-baseline", "auto")
+                    .attr("font", "15px")
+                    .attr("font-weight", "bold")
+                    .attr("font-family", "arial")
+                    .attr("x", xScale(d))
+                    .attr('y', 240)
+                    .text(d);
+            });
+
+            circleData = [{ "x": 1.0, "y": 1.0 },
+            { "x": 2.0, "y": 2.0 },
+            { "x": 3.0, "y": 3.5 },
+            { "x": 4.0, "y": 4.5 },
+            { "x": 5.0, "y": 5.0 },
+            { "x": 6.0, "y": 5.5 },
+            { "x": 7.0, "y": 6.0 },
+            { "x": 8.0, "y": 7.5 },
+            { "x": 9.0, "y": 9.0 }];
+
+            circleData.forEach((d, i) => {
+                svg.append("circle")
+                    .attr("r", 4)
+                    .attr("cx", xScale(d['x']))
+                    .attr("cy", yScale(d['y']))
+                    .style("fill", "darkblue");
+            });
+
+
+        </script>
+
+    </p>
+
+    <p id="p3">
+        <svg id="svg2" height=500 width=500 style="background-color:black"></svg>
+        <script>
+            d3.csv("NCAA_shots.csv").then((data) => {
+
+                console.log(data)
+                data.forEach((d, i) => {
+                    d['x'] = d['x'] * 5;
+                    d['y'] = d['y'] * 5;
+                    d['width'] = d['width'] * 5;
+                    d['height'] = d['height'] * 5;
+                });
+
+                console.log(data)
+
+                const attemptExtent = d3.extent(data, d => d['log_attempt']);
+                var sequentialScale = d3.scaleSequential()
+                    .domain(attemptExtent)
+                    .interpolator(d3.interpolateInferno);
+
+                let svg2 = d3.select("#svg2");
+                data.forEach((d, i) => {
+                    svg2.append("rect")
+                        .attr("x", d['x'])
+                        .attr("y", d['y'])
+                        .attr("width", d['width'])
+                        .attr("height", d['height'])
+                        .attr("fill", sequentialScale(d['log_attempt']));
+                });
+            });
+
+
+        </script>
+        One advantage of the logarithmic color scale is that we can see all the colors and all the data is displayed. A
+        disadvantage is that the colors are a lot duller than the original linear scale.
+    </p>
+</body>
+
+</html>
