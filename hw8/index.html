@@ -1,0 +1,142 @@
+<html>
+
+<head>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+
+<body>
+    <h3>
+        Fatima Mahmoud (fam76)
+    </h3>
+    <p id="p1"> I picked board-games.csv because I want to see if the amount of players in a game affects the game
+        rating. My hypothesis is that the more minimum recommended players there are, the higher the rating because
+        games are always more fun with more people in my own experience.
+    </p>
+    <svg id="game_svg" height="500" width="800">
+        <text id="label" x="795" y=".5" text-anchor="end" alignment-baseline="hanging"></text>
+    </svg>
+    <script>
+        d3.csv("board_games.csv").then((data) => {
+
+            console.log(data)
+
+            data.forEach((d, i) => {
+                d['average_rating'] = Number(d['average_rating']);
+                d['min_players'] = Number(d['min_players']);
+                d['max_players'] = Number(d['max_players']);
+                d['min_playtime'] = Number(d['min_playtime']);
+
+            });
+
+            data = data.filter((d) => { return (d['average_rating']) != null; })
+
+            console.log(data)
+
+            const svg = d3.select("#game_svg");
+            const width = svg.attr("width");
+            const height = svg.attr("height");
+            const margins = { "top": 10, "right": 10, "bottom": 50, "left": 50 };
+            const chartWidth = width - margins.left - margins.right;
+            const chartHeight = height - margins.top - margins.bottom;
+
+            let scatter = svg.append("g")
+                .attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+
+            const playersExtent = d3.extent(data, d => d['min_players']);
+            const playersScale = d3.scaleLinear().domain(playersExtent).range([0, chartWidth]);
+
+            const ratingExtent = d3.extent(data, d => d['average_rating']);
+            const ratingScale = d3.scaleLinear().domain(ratingExtent).range([chartHeight, 0]);
+
+            data.forEach((d, i) => {
+                let circle = scatter.append("circle")
+                    .attr("cx", playersScale(d['min_players']) + jitter())
+                    .attr("cy", ratingScale(d['average_rating']) + jitter())
+                    .attr("r", 4)
+                    .attr("fill", "green")
+                    .attr("index", i)
+                    .attr("opacity", 0.7)
+                    .attr("label", d["name"])
+
+                circle.on("mouseover", function () {
+
+                    var label_text = d['name'] + " rating: " + d['average_rating'] + " min players: " + d['min_players']
+
+                    d3.select(this).raise()
+                        .transition().duration(200)
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 4)
+                        .attr("r", 6);
+
+
+                    d3.select("#label").text(label_text);
+
+                })
+
+                circle.on("mouseout", function () {
+
+                    d3.select(this)
+                        .transition().duration(200)
+                        .attr("stroke-width", 0)
+                        .attr("r", 4);
+
+                    d3.select("#label").text(d[""]);
+
+                })
+            })
+
+            let leftAxis = d3.axisLeft(ratingScale);
+            svg.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + (margins.left - 10) + "," + margins.top + ")")
+                .call(leftAxis);
+
+            let bottomAxis = d3.axisBottom(playersScale)
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(" + margins.left + "," + (chartHeight + margins.top + 10) + ")")
+                .call(bottomAxis);
+
+            let leftGridlines = d3.axisLeft(ratingScale)
+                .tickSize(-chartWidth - 10)
+                .tickFormat("");
+            svg.append("g").lower()
+                .attr("class", "y gridlines")
+                .attr("transform", "translate(" + (margins.left - 10) + "," + margins.top + ")")
+                .call(leftGridlines);
+
+            let bottomGridlines = d3.axisBottom(playersScale)
+                .tickSize(-chartHeight - 10)
+                .tickFormat("")
+            svg.append("g").lower()
+                .attr("class", "x gridlines")
+                .attr("transform", "translate(" + margins.left + "," + (chartHeight + margins.top + 10) + ")")
+                .call(bottomGridlines);
+
+            svg.append("text")
+                .attr("text-anchor", "end")
+                .attr("x", chartWidth / 2)
+                .attr("y", chartHeight + margins.top + 40)
+                .text("Minimum Players");
+
+            svg.append("text")
+                .attr("text-anchor", "end")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -margins.left + 65)
+                .attr("x", -margins.top - 210)
+                .text("Ratings")
+
+        })
+
+        function jitter() {
+
+            min = Math.ceil(-5);
+            max = Math.floor(5);
+            return Math.floor(Math.random() * (max - min + 1) + min);
+
+        }
+    </script>
+
+</body>
+
+</html>
